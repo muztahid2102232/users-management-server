@@ -40,6 +40,27 @@ app.get("/users/:id", async(req,res)=>{
   res.send(individualUser);
 })
 
+app.delete("/users/:id", async(req,res)=>{
+  const id=req.params.id;
+  const query={_id:new ObjectId(id)};
+  const deletedUser=await dbCollection.deleteOne(query);
+  res.send(deletedUser);
+})
+
+app.patch("/users/:id",async(req,res)=>{
+  const id=req.params.id;
+  const updatedUser=req.body;
+const filter={_id: new ObjectId(id)};
+const options={upsert:true};
+const updateDoc={$set:{
+  name: updatedUser.name,
+  email:updatedUser.email
+}}
+
+const finalUpdatedUser=await dbCollection.updateOne(filter,updateDoc,options);
+res.send(finalUpdatedUser);
+})
+
 app.post("/users",async(req,res)=>{
   console.log('data after submission', req.body);
   const newUser = await dbCollection.insertOne(req.body);
